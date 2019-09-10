@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.time.LocalDate;
+import java.time.Period;
 
 public class PasswordCheck {
 
@@ -80,12 +81,18 @@ public class PasswordCheck {
     int daysElapsedSinceLastLogin(String u_name) {
         try {
             System.out.println(u_name);
+            System.out.println(conn);
             PreparedStatement ps = conn.prepareStatement("select lastDate from Users where username=?");
             ps.setString(1, u_name);
             ResultSet rs = ps.executeQuery();
-            System.out.println(rs);
+            System.out.println(rs.next()+"Here");
             java.sql.Date ts=rs.getDate("lastDate");
-            //System.out.println(ts);
+            System.out.println(ts);
+            LocalDate dt=ts.toLocalDate();
+            LocalDate ldt = LocalDate.now();
+            Period diff=Period.between(dt, ldt);
+            int days=diff.getDays();
+            System.out.println(days);
 
         } catch (SQLException ex) {
             Logger.getLogger(PasswordCheck.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,23 +107,37 @@ public class PasswordCheck {
 
     }
 
-    boolean isLocked() {
-        return false;
-
+    boolean isLocked(String username) throws SQLException {
+        PreparedStatement ps=conn.prepareStatement("select * from Users where username=?");
+        ps.setString(1, username);
+        ResultSet rs=ps.executeQuery();
+        System.out.println(rs.next()+"Here");
+        int x=rs.getInt("isLocked");
+        System.out.println(x);
+        
+        return x != 0;
     }
 
     boolean isDefaultPassword(String password) {
-        return false;
+        return password.equals("purVES3$");
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         // TODO code application logic here
         PasswordCheck pw=new PasswordCheck();
         pw.connectToDatabase();
         LocalDate ldt = LocalDate.now();
-        System.out.println(ldt);
-        pw.daysElapsedSinceLastLogin("bhushan");
+        //System.out.println(ldt);
+        pw.daysElapsedSinceLastLogin("manav");
+//        boolean locked;
+//        locked = pw.isLocked("bhushan");
+//        boolean hasLowerCase = pw.hasLowerCase("ABCabc0@");
+//        boolean hasUpperCase = pw.hasUpperCase("ABCabc0@");
+//        boolean hasNumber = pw.hasNumber("ABCabc0@");
+//        boolean hasSpecialCharacter = pw.hasSpecialCharacter("ABCabc0@");
+//        System.out.println(hasLowerCase + " " + hasUpperCase +" "+" "+hasNumber+" "+hasSpecialCharacter);
+//        
     }
 
 }
