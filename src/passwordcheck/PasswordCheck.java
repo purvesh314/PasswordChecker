@@ -101,10 +101,18 @@ public class PasswordCheck {
 
     }
 
-    boolean isRedundantPassword(String password) {
-        System.out.println(conn);
-        return false;
-
+    boolean isRedundantPassword(String password,String username) throws SQLException {
+        PreparedStatement ps=conn.prepareStatement("select * from Users where username=?");
+        ps.setString(1, username);
+        ResultSet rs=ps.executeQuery();
+        System.out.println(rs.next()+"Here");
+        String pw=rs.getString("password");
+        String pw1=rs.getString("password1");
+        String pw2=rs.getString("password2");
+        String pw3=rs.getString("password3");
+        String pw4=rs.getString("password4");
+        
+        return !(!password.equals(pw) && !password.equals(pw1) && !password.equals(pw2)&& !password.equals(pw3)&& !password.equals(pw4));
     }
 
     boolean isLocked(String username) throws SQLException {
@@ -137,7 +145,8 @@ public class PasswordCheck {
 //        boolean hasNumber = pw.hasNumber("ABCabc0@");
 //        boolean hasSpecialCharacter = pw.hasSpecialCharacter("ABCabc0@");
 //        System.out.println(hasLowerCase + " " + hasUpperCase +" "+" "+hasNumber+" "+hasSpecialCharacter);
-//        
+        boolean redundantPassword = pw.isRedundantPassword("ABsabc0@", "bhushan");
+        System.out.println(redundantPassword);
     }
 
 }
